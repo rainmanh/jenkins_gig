@@ -1,0 +1,76 @@
+---
+#- name: debian |  Ensure Automatic apt-daily.service is disable
+#  become: yes
+#  command: systemctl disable apt-daily.service
+
+#- name: debian |  Ensure Automatic apt-daily.timer is disable
+#  become: yes
+#  command: systemctl disable apt-daily.timer
+- name: debian | Installing Pre-Reqs for Ubuntu Precise and Older
+  apt:
+    name: "{{ item }}"
+    state: "present"
+  with_items:
+    - 'python-software-properties'
+  when: ansible_distribution_version|int < 14
+
+- name: debian | Adding Jenkins Repo Key
+  apt_key:
+    url: "{{ jenkins_repo_key }}"
+    state: "present"
+
+- name: debian | Adding Jenkins Repo
+  apt_repository:
+    repo: "{{ jenkins_apt_repo }}"
+    state: "present"
+
+- name: debian | Adding Ansible Repo
+  apt_repository:
+    repo: "{{ ansible_apt_repo }}"
+    state: "present"
+
+- name: debian | Installing Jenkins Pre-Reqs
+  apt:
+    name: "{{ item }}"
+    update_cache: yes
+    state: "latest"
+  with_items: '{{ jenkins_debian_pre_req_packages }}'
+  async: 900
+  poll: 5
+
+- name: debian | Installing PIP Dependencies
+  pip:
+    name: "{{ item }}"
+  with_items: "{{ pip_dependencies }}"
+
+- name: debian | Installing Jenkins
+  apt:
+    name: "jenkins"
+    state: "present"
+
+- name: debian | Get default Jenkins home
+  shell: ". /etc/default/jenkins; echo $JENKINS_HOME"
+  register: jenkins_initial_default_home
+
+- name: users | Creating Directory Jenkins Directory
+  file:
+    path: "{{ jenkins_home_dir }}"
+    state: directory
+    owner: jenkins
+    group: jenkins
+  when: (jenkins_home_dir != jenkins_initial_default_home.stdout)
+
+- name: user | Stop Jenkins
+  service:
+    name: "jenkins"
+    state: "stopped"
+
+- name: users | Changing Jenkins Home Directory
+  shell: "usermod -d {{ jenkins_home_dir }} jenkins"
+  when: (jenkins_home_dir != jenkins_initial_default_home.stdout)
+
+- name: debian | Update /etc/default/jenkins on Ubuntu
+  template: src=roles/jenkins/templates/etc/default/jenkins.j2 dest=/etc/default/jenkins
+
+- name: debian | Installs bash_profile for jenkins
+  template: src=roles/jenkins/templates/jenkins_bash_profile.j2 dest=/data/jenkins/.bash_profile owner=jenkins group=jenkins mode=644

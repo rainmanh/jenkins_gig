@@ -1,0 +1,12 @@
+#This Token has to be generated using your itsyou.online credentials
+jwt_token ="xxxxxxx"
+# URL for the GIG Server.
+BASE_URL = "https://<server_name>/restmachine/"
+
+#VM Related Variables
+user_name = "user_name" #Base name for the Account in the VM
+vm_name = "Jenkins_GIG" #The Name has to be Unique
+vm_sizeId = "2" #You need to Check the Catalogue in the GIG.
+vm_imageId= "1" #You need to Check the Catalogue in the GIG.
+vm_disksize = "20" #These are GBs.
+vm_cloudspaceId = "200" #This is the target Cloud Space from your Account

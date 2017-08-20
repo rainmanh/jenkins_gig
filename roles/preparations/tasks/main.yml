@@ -1,0 +1,40 @@
+---
+- name: Preparations | Disable and Stop AutoUpdates
+  command: "{{item}}"
+  with_items:
+    - 'systemctl stop apt-daily.service'
+    - 'systemctl disable apt-daily.service'
+    - 'systemctl stop apt-daily.timer'
+    - 'systemctl disable apt-daily.timer'
+
+- name: Preparations | Make {{ user_vm }} Dir .ssh
+  file:
+    path: /home/{{ user_vm }}/.ssh
+    owner: "{{ user_vm }}"
+    group: "{{ user_vm }}"
+    mode: 0744
+    state: directory
+
+- name: Preparations | Copy Local SSH keys to {{ user_vm }} as authorized_keys
+  copy:
+    src={{ pub_sshkey_location }}
+    owner={{ user_vm }}
+    group={{ user_vm }}
+    dest=/home/{{ user_vm }}/.ssh/authorized_keys mode=0600
+
+- name: Preparations | Adding {{ user_vm }} Account To Sudoers
+  lineinfile:
+    dest: "/etc/sudoers"
+    regexp: "^root ALL"
+    insertafter: '^root ALL'
+    line: "{{ user_vm }} ALL=(ALL) NOPASSWD:ALL"
+    validate: "visudo -cf %s"
+    state: "present"
+
+- name: Preparations | Installing Preliminary System Packages
+  apt:
+    name: "{{ item }}"
+    state: "latest"
+  with_items: '{{ jenkins_debian_preliminary_packages }}'
+  async: 900
+  poll: 5

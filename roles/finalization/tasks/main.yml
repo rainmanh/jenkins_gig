@@ -1,0 +1,12 @@
+---
+- name: Finalization | Removal of Password based login access to {{ user_vm }}
+  command: passwd -l {{ user_vm }}
+
+
+- name: Finalization| Disallow password authentication
+  lineinfile:
+    dest=/etc/ssh/sshd_config
+    regexp="^PasswordAuthentication"
+    line="PasswordAuthentication no"
+    state=present
+  notify: Restart ssh
