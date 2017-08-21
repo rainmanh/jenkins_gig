@@ -9,7 +9,7 @@
    - vars/main.yml
 
   roles:
-   - preparations
+   - { role: preparations, when: ansible_os_family == "Debian"}
    - jenkins
-   - iptables
-   - finalization
+   - {role: iptables, when: ansible_os_family == "Debian"}
+   - {role: finalization, when: ansible_os_family == "Debian"}
