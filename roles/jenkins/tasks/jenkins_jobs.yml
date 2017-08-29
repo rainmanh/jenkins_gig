@@ -1,16 +1,29 @@
 ---
-- name: Creating Jenkis jobs ini file.
+- name: jenkins jobs | Creating Jenkis jobs ini file.
   file: path=/etc/jenkins_jobs state=directory
 
-- name: Copy jenkins_jobs.ini to /etc/jenkins_jobs
+- name: jenkins jobs | Copy jenkins_jobs.ini to /etc/jenkins_jobs
   copy: src=etc/jenkins_jobs/jenkins_jobs.ini dest=/etc/jenkins_jobs/jenkins_jobs.ini mode=0644
 
-- name: Check on Jenkins Jobs Already Done
+- name: jenkins jobs | Check on Jenkins Jobs Already Done
   stat: path="/tmp/{{ item }}.jenkins_job_done"
   with_items: "{{ jenkins_jobs }}"
   register: jenkins_job_done
 
-- name: Applying Jenkins jobs if Not Previously Done
-  shell: "jenkins-jobs update /opt/ansible/roles/jenkins/templates/jenkins_jobs/{{ item.item }}.xml.j2; touch /tmp/{{ item.item }}.jenkins_job_done"
+- name: jenkins jobs | Create Directory for the jobs
+  file:
+    path: "/opt/jenkins_jobs"
+    state: directory
+    owner: jenkins
+    group: jenkins
+    mode: 0755
+
+- name: jenkins jobs | Copy Files to the Right Location
+  copy: src=jenkins_jobs/{{ item.item }}.xml dest=/opt/jenkins_jobs/{{ item.item }}.xml mode=0644
+  with_items: "{{ jenkins_job_done.results }}"
+
+- name: jenkins jobs | Applying Jenkins jobs if Not Previously Done
+  shell: "jenkins-jobs update /opt/jenkins_jobs/{{ item.item }}.xml; touch /tmp/{{ item.item }}.jenkins_job_done"
   with_items: "{{ jenkins_job_done.results }}"
   when: not item.stat.exists
+

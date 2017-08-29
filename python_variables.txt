@@ -1,12 +1,24 @@
 #This Token has to be generated using your itsyou.online credentials
-jwt_token ="xxxxxxx"
-# URL for the GIG Server.
-BASE_URL = "https://<server_name>/restmachine/"
+
+jwt_token = "xxxxx"
 
 #VM Related Variables
 user_name = "user_name" #Base name for the Account in the VM
-vm_name = "Jenkins_GIG" #The Name has to be Unique
-vm_sizeId = "2" #You need to Check the Catalogue in the GIG.
-vm_imageId= "1" #You need to Check the Catalogue in the GIG.
-vm_disksize = "20" #These are GBs.
 vm_cloudspaceId = "200" #This is the target Cloud Space from your Account
+vm_imageId = "1" #You need to Check the Catalogue in the GIG.
+vm_sizeId = "2" #You need to Check the Catalogue in the GIG.
+
+#AYS Variables
+file_name = "create_vm.yaml"
+repo_name = "giguk_ays"
+vm_location = "be-gen-1"
+vm_vdc = "vdcuk"
+account_name = "UK_Test_Account"
+ays_client = "http://localhost:5000"
+vm_osimage = "Ubuntu 16.04 x64"
+vm_memory = "1" #Memory in Gigs
+
+#Common Variables
+BASE_URL = "be-gen-1.demo.greenitglobe.com"
+vm_name = "Jenkins_GIG" #The Name has to be Unique
+vm_disksize = "20" #These are GBs.
