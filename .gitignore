@@ -26,3 +26,7 @@ docker_files/
 #Ansible
 hosts
 main.retry
+create_vm.yaml
+__pycache__
+vars/main_head.yml
+vars/main.yml

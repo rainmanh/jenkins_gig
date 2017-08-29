@@ -1,0 +1,3 @@
+---
+#GIG Specific variables below.
+user_vm: "{{ __VM_LOGIN__ }}"

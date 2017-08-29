@@ -1,7 +1,5 @@
----
-#GIG Specific variables below.
-user_vm: "vm_user"
-pub_sshkey_location: "/<path>/id_rsa.pub"
+
+pub_sshkey_location: "/<path>/.ssh/ays_repos_key.pub"
 # defaults file for ansible-jenkins
 config_jenkins: true  #defines if jenkins will be configured from templates or left as default install
 enable_jenkins_sudo: true  #defines if jenkins user should have sudo rights (Useful for running Ansible tasks from CLI)
